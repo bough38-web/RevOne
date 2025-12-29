@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
     <div id="toastContainer" class="toast-container"></div>
 
@@ -15,11 +17,14 @@
         <div class="glass-panel login-box">
             <h1 class="brand-logo">🚀 Sales Admin <span class="ver">Pro</span></h1>
             <p class="subtitle">Premium Dashboard Solution</p>
-            
+
             <div class="role-selector">
-                <label><input type="radio" name="role" value="ADMIN" checked onclick="app.setLoginMode('ADMIN')"> <span>Admin</span></label>
-                <label><input type="radio" name="role" value="BRANCH" onclick="app.setLoginMode('BRANCH')"> <span>Branch</span></label>
-                <label><input type="radio" name="role" value="STAFF" onclick="app.setLoginMode('STAFF')"> <span>Staff</span></label>
+                <label><input type="radio" name="role" value="ADMIN" checked onclick="app.setLoginMode('ADMIN')">
+                    <span>Admin</span></label>
+                <label><input type="radio" name="role" value="BRANCH" onclick="app.setLoginMode('BRANCH')">
+                    <span>Branch</span></label>
+                <label><input type="radio" name="role" value="STAFF" onclick="app.setLoginMode('STAFF')">
+                    <span>Staff</span></label>
             </div>
 
             <div id="loginForm" class="login-form">
@@ -28,11 +33,15 @@
                     <input type="password" id="adminPw" placeholder="Password (1234)" class="input-glass">
                 </div>
                 <div id="formBranch" style="display:none;">
-                    <select id="loginBranchSelect" class="input-glass"><option>Select Branch</option></select>
+                    <select id="loginBranchSelect" class="input-glass">
+                        <option>Select Branch</option>
+                    </select>
                     <input type="password" id="branchPw" placeholder="Password (1234)" class="input-glass">
                 </div>
                 <div id="formStaff" style="display:none;">
-                    <select id="loginStaffBranch" class="input-glass" onchange="app.updateLoginStaffList()"><option>Select Branch</option></select>
+                    <select id="loginStaffBranch" class="input-glass" onchange="app.updateLoginStaffList()">
+                        <option>Select Branch</option>
+                    </select>
                     <input type="text" id="loginStaffName" placeholder="Name (e.g. 김의겸)" class="input-glass">
                     <input type="password" id="staffPw" placeholder="Phone Last 4 Digits" class="input-glass">
                 </div>
@@ -44,7 +53,7 @@
     <div class="app-container" style="display:none;">
         <nav class="sidebar glass-panel">
             <div class="brand">🚀 Sales Admin <span class="ver">v7</span></div>
-            
+
             <div class="user-profile">
                 <div class="avatar">👤</div>
                 <div class="info" id="displayUserInfo">Loading...</div>
@@ -57,14 +66,14 @@
             <button class="nav-item" onclick="app.showTab('list')">
                 <span class="icon">📝</span> 실적 관리
             </button>
-            
+
             <div class="menu-label admin-only">ADMINISTRATION</div>
             <button class="nav-item admin-only" onclick="app.showTab('settings')">
                 <span class="icon">⚙️</span> 시스템 설정
             </button>
 
             <div class="spacer"></div>
-            
+
             <div class="bottom-actions">
                 <button onclick="app.toggleTheme()" class="btn-icon" title="테마 변경">🌓</button>
                 <button onclick="app.logout()" class="btn-icon logout" title="로그아웃">🚪</button>
@@ -82,7 +91,7 @@
                         <span class="kpi-badge">Total Revenue: <b id="headRevenue">0</b></span>
                     </div>
                 </div>
-                
+
                 <div class="cards-grid">
                     <div class="card glass-panel">
                         <div class="card-icon blue">🔵</div>
@@ -113,7 +122,7 @@
                         <p class="sub-stat">신규 - 해지 차감</p>
                     </div>
                 </div>
-                
+
                 <div class="chart-container glass-panel">
                     <h3>📈 지사별 목표 대비 실적 분석</h3>
                     <div class="chart-wrapper">
@@ -126,7 +135,8 @@
                 <div class="header-row">
                     <h2>Performance Records</h2>
                     <div class="actions">
-                        <input type="text" id="searchInput" placeholder="Search..." class="input-search" onkeyup="app.filterList()">
+                        <input type="text" id="searchInput" placeholder="Search..." class="input-search"
+                            onkeyup="app.filterList()">
                         <select id="filterBranch" onchange="app.filterList()" class="input-select">
                             <option value="ALL">All Branches</option>
                         </select>
@@ -141,6 +151,7 @@
                                 <th onclick="app.sortList('branch')">지사 ↕</th>
                                 <th onclick="app.sortList('manager')">담당자 ↕</th>
                                 <th onclick="app.sortList('rate')">신규 달성률 ↕</th>
+                                <th>청약</th>
                                 <th>해지 현황</th>
                                 <th>리텐션</th>
                                 <th>Action</th>
@@ -160,7 +171,7 @@
                     <div class="modal-body">
                         <input type="hidden" id="editId">
                         <div class="info-tag" id="modalInfo"></div>
-                        
+
                         <div class="form-grid">
                             <div class="form-group">
                                 <label>🔵 신규 건수</label>
@@ -169,6 +180,10 @@
                             <div class="form-group">
                                 <label>🔴 해지 건수</label>
                                 <input type="number" id="inpCancel" class="input-glass">
+                            </div>
+                            <div class="form-group">
+                                <label>🆕 청약 건수</label>
+                                <input type="number" id="inpSub" class="input-glass">
                             </div>
                             <div class="form-group">
                                 <label>⛔ 정지 건수</label>
@@ -200,7 +215,8 @@
                         <div class="btn-group">
                             <button onclick="app.initializeData()" class="btn-primary">Initialize (Reset)</button>
                             <button onclick="app.backupData()" class="btn-outline">Backup JSON</button>
-                            <button onclick="document.getElementById('fileRestore').click()" class="btn-outline">Restore</button>
+                            <button onclick="document.getElementById('fileRestore').click()"
+                                class="btn-outline">Restore</button>
                             <input type="file" id="fileRestore" style="display:none" onchange="app.restoreData(this)">
                         </div>
                     </div>
@@ -218,4 +234,5 @@
     </div>
     <script src="script.js"></script>
 </body>
+
 </html>

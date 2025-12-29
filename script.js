@@ -11,10 +11,10 @@ const MASTER_CSV = `지사명,구역코드,담당자명,신규목표,해지목�
 서대문지사,G000201,유범식,45,2,0000`;
 
 const app = {
-    user: null, 
+    user: null,
     // Centralized Config & Credentials
-    config: JSON.parse(localStorage.getItem('sa_pro_config')) || { 
-        fee: 30, 
+    config: JSON.parse(localStorage.getItem('sa_pro_config')) || {
+        fee: 30,
         theme: 'light',
         auth: {
             admin: { id: 'admin', pw: '1234' },
@@ -25,97 +25,97 @@ const app = {
     data: JSON.parse(localStorage.getItem('sa_pro_data')) || [],
     sortDir: 1,
 
-    init: function() {
+    init: function () {
         this.applyTheme(this.config.theme);
-        if(!this.data || this.data.length === 0) this.initData(false);
+        if (!this.data || this.data.length === 0) this.initData(false);
         this.updateLoginOptions();
-        
+
         // 세션 자동 복구
         const savedUser = sessionStorage.getItem('sa_user');
-        if(savedUser) { 
+        if (savedUser) {
             try {
-                this.user = JSON.parse(savedUser); 
-                this.onLoginSuccess(); 
-            } catch(e) {
+                this.user = JSON.parse(savedUser);
+                this.onLoginSuccess();
+            } catch (e) {
                 sessionStorage.removeItem('sa_user');
             }
         }
     },
 
-    showToast: function(msg, type='info') {
+    showToast: function (msg, type = 'info') {
         const el = document.createElement('div');
         el.className = 'toast';
         el.style.borderLeftColor = type === 'success' ? '#2ecc71' : (type === 'error' ? '#e74c3c' : '#4e54c8');
-        el.innerHTML = `<span>${type==='success'?'✅':'ℹ️'}</span> <div>${msg}</div>`;
+        el.innerHTML = `<span>${type === 'success' ? '✅' : 'ℹ️'}</span> <div>${msg}</div>`;
         const container = document.getElementById('toastContainer');
-        if(container) container.appendChild(el);
+        if (container) container.appendChild(el);
         setTimeout(() => el.remove(), 3000);
     },
 
-    toggleTheme: function() {
+    toggleTheme: function () {
         this.config.theme = this.config.theme === 'light' ? 'dark' : 'light';
         localStorage.setItem('sa_pro_config', JSON.stringify(this.config));
         this.applyTheme(this.config.theme);
     },
-    applyTheme: function(theme) {
+    applyTheme: function (theme) {
         document.documentElement.setAttribute('data-theme', theme);
     },
 
-    setLoginMode: function(mode) {
-        ['Admin','Branch','Staff'].forEach(m => {
-            const el = document.getElementById('form'+m);
-            if(el) el.style.display = 'none';
+    setLoginMode: function (mode) {
+        ['Admin', 'Branch', 'Staff'].forEach(m => {
+            const el = document.getElementById('form' + m);
+            if (el) el.style.display = 'none';
         });
-        const target = document.getElementById('form'+(mode.charAt(0)+mode.slice(1).toLowerCase()));
-        if(target) target.style.display = 'block';
+        const target = document.getElementById('form' + (mode.charAt(0) + mode.slice(1).toLowerCase()));
+        if (target) target.style.display = 'block';
     },
-    updateLoginOptions: function() {
+    updateLoginOptions: function () {
         // Handle case where data might be empty or malformed
         const branches = this.data ? [...new Set(this.data.map(d => d.branch))].filter(Boolean) : [];
         const opts = '<option value="">Select Branch</option>' + branches.map(b => `<option value="${b}">${b}</option>`).join('');
         const brSelect = document.getElementById('loginBranchSelect');
         const stSelect = document.getElementById('loginStaffBranch');
-        if(brSelect) brSelect.innerHTML = opts;
-        if(stSelect) stSelect.innerHTML = opts;
+        if (brSelect) brSelect.innerHTML = opts;
+        if (stSelect) stSelect.innerHTML = opts;
     },
-    updateLoginStaffList: function() { // Added missing logical implementation
+    updateLoginStaffList: function () { // Added missing logical implementation
         const br = document.getElementById('loginStaffBranch').value;
         const staffList = this.data.filter(d => d.branch === br).map(d => d.manager);
         // Optionally update a datalist or similar if we were using a select for names, 
         // but current UI uses text input for name, so we just return.
     },
 
-    login: function() {
+    login: function () {
         const roleInput = document.querySelector('input[name="role"]:checked');
-        if(!roleInput) return;
+        if (!roleInput) return;
         const role = roleInput.value;
         let u = null;
-        
+
         // Use credentials from config
-        if(role === 'ADMIN') {
+        if (role === 'ADMIN') {
             const id = document.getElementById('adminId').value;
             const pw = document.getElementById('adminPw').value;
-            if(id === this.config.auth.admin.id && pw === this.config.auth.admin.pw)
+            if (id === this.config.auth.admin.id && pw === this.config.auth.admin.pw)
                 u = { role, name: 'Administrator', branch: 'HQ' };
-        } else if(role === 'BRANCH') {
+        } else if (role === 'BRANCH') {
             const br = document.getElementById('loginBranchSelect').value;
             const pw = document.getElementById('branchPw').value;
-            if(br && pw === this.config.auth.branch.pw) u = { role, name: br + ' Manager', branch: br };
-        } else if(role === 'STAFF') {
+            if (br && pw === this.config.auth.branch.pw) u = { role, name: br + ' Manager', branch: br };
+        } else if (role === 'STAFF') {
             const br = document.getElementById('loginStaffBranch').value;
             const nm = document.getElementById('loginStaffName').value.trim();
             const pw = document.getElementById('staffPw').value.trim();
-            
-            if(br && nm) {
+
+            if (br && nm) {
                 const t = this.data.find(d => d.branch === br && d.manager === nm);
-                if(t) {
+                if (t) {
                     const savedPw = t.phone || this.config.auth.defaultPw;
-                    if(savedPw === pw) u = { role, name: nm, branch: br };
+                    if (savedPw === pw) u = { role, name: nm, branch: br };
                 }
             }
         }
 
-        if(u) {
+        if (u) {
             this.user = u;
             sessionStorage.setItem('sa_user', JSON.stringify(u));
             this.onLoginSuccess();
@@ -124,80 +124,80 @@ const app = {
             this.showToast('Login failed. Please check your credentials.', 'error');
         }
     },
-    onLoginSuccess: function() {
+    onLoginSuccess: function () {
         const loginScreen = document.getElementById('loginScreen');
         const appContainer = document.querySelector('.app-container');
-        
-        if(loginScreen) loginScreen.style.display = 'none';
-        if(appContainer) appContainer.style.display = 'flex';
-        
+
+        if (loginScreen) loginScreen.style.display = 'none';
+        if (appContainer) appContainer.style.display = 'flex';
+
         const userInfo = document.getElementById('displayUserInfo');
-        if(userInfo) userInfo.innerHTML = `<b>${this.user.name}</b><br><small>${this.user.role}</small>`;
-        
+        if (userInfo) userInfo.innerHTML = `<b>${this.user.name}</b><br><small>${this.user.role}</small>`;
+
         document.querySelectorAll('.admin-only').forEach(e => e.style.display = this.user.role === 'ADMIN' ? 'block' : 'none');
-        
+
         const dateEl = document.getElementById('todayDate');
-        if(dateEl) dateEl.innerText = new Date().toLocaleDateString();
+        if (dateEl) dateEl.innerText = new Date().toLocaleDateString();
         this.renderAll();
     },
-    logout: function() {
+    logout: function () {
         sessionStorage.removeItem('sa_user');
         location.reload();
     },
 
-    initData: function(alertMsg=true) {
-        if(!MASTER_CSV) return;
+    initData: function (alertMsg = true) {
+        if (!MASTER_CSV) return;
         const lines = MASTER_CSV.split('\n');
         this.data = [];
-        for(let i=1; i<lines.length; i++) {
+        for (let i = 1; i < lines.length; i++) {
             const line = lines[i].trim();
-            if(!line) continue;
-            
+            if (!line) continue;
+
             const p = line.split(',');
-            if(p.length < 3) continue; // Basic validation
-            
+            if (p.length < 3) continue; // Basic validation
+
             this.data.push({
-                id: Date.now() + i, 
-                branch: p[0].trim(), 
-                code: p[1].trim(), 
+                id: Date.now() + i,
+                branch: p[0].trim(),
+                code: p[1].trim(),
                 manager: p[2].trim(),
-                targetNew: Number(p[3])||0, 
-                targetCancel: Number(p[4])||0, 
-                phone: p[5]?p[5].trim():'0000',
-                nc:0, cc:0, sus:0, ret:0, note:''
+                targetNew: Number(p[3]) || 0,
+                targetCancel: Number(p[4]) || 0,
+                phone: p[5] ? p[5].trim() : '0000',
+                nc: 0, sub: 0, cc: 0, sus: 0, ret: 0, note: ''
             });
         }
         this.save();
-        if(alertMsg) this.showToast('Data initialized successfully.', 'success');
+        if (alertMsg) this.showToast('Data initialized successfully.', 'success');
         this.updateLoginOptions();
         this.renderAll();
     },
 
-    sortList: function(key) {
+    sortList: function (key) {
         this.sortDir *= -1;
-        this.data.sort((a,b) => {
+        this.data.sort((a, b) => {
             let vA = a[key], vB = b[key];
-            if(key === 'rate') { 
+            if (key === 'rate') {
                 // Safe division
-                vA = a.targetNew > 0 ? a.nc/a.targetNew : 0; 
-                vB = b.targetNew > 0 ? b.nc/b.targetNew : 0; 
+                vA = a.targetNew > 0 ? a.nc / a.targetNew : 0;
+                vB = b.targetNew > 0 ? b.nc / b.targetNew : 0;
             }
             if (typeof vA === 'string') vA = vA.toLowerCase();
             if (typeof vB === 'string') vB = vB.toLowerCase();
-            
+
             if (vA < vB) return -this.sortDir;
             if (vA > vB) return this.sortDir;
             return 0;
         });
         this.renderList();
     },
-    filterList: function() {
+    filterList: function () {
         this.renderList();
     },
 
-    renderAll: function() { this.renderDashboard(); this.renderList(); },
-    
-    renderList: function() {
+    renderAll: function () { this.renderDashboard(); this.renderList(); },
+
+    renderList: function () {
         const tbody = document.getElementById('listBody');
         const searchInput = document.getElementById('searchInput');
         const search = searchInput ? searchInput.value.toLowerCase() : '';
@@ -205,48 +205,49 @@ const app = {
         const brFilter = filterBranch ? filterBranch.value : 'ALL';
         const u = this.user;
 
-        if(!tbody) return;
+        if (!tbody) return;
 
         let list = this.data.filter(d => {
-            if(u.role === 'BRANCH' && d.branch !== u.branch) return false;
-            if(u.role === 'STAFF' && (d.branch !== u.branch || d.manager !== u.name)) return false;
-            if(brFilter !== 'ALL' && d.branch !== brFilter) return false;
+            if (u.role === 'BRANCH' && d.branch !== u.branch) return false;
+            if (u.role === 'STAFF' && (d.branch !== u.branch || d.manager !== u.name)) return false;
+            if (brFilter !== 'ALL' && d.branch !== brFilter) return false;
             return d.manager.toLowerCase().includes(search) || d.branch.toLowerCase().includes(search);
         });
 
-        if(list.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px;">No data found.</td></tr>';
+        if (list.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px;">No data found.</td></tr>';
             return;
         }
 
         tbody.innerHTML = list.map(d => {
             // Robust calculation
-            const r = d.targetNew > 0 ? Math.round((d.nc/d.targetNew)*100) : 0;
+            const r = d.targetNew > 0 ? Math.round((d.nc / d.targetNew) * 100) : 0;
             return `<tr>
                 <td><b>${d.branch}</b></td>
                 <td>${d.manager} <span style="font-size:11px; color:#888;">${d.code}</span></td>
                 <td>
                     <div style="display:flex; align-items:center; gap:8px;">
                         <div style="flex:1; height:6px; background:#eee; border-radius:3px; overflow:hidden;">
-                            <div style="width:${Math.min(r,100)}%; background:var(--primary); height:100%;"></div>
+                            <div style="width:${Math.min(r, 100)}%; background:var(--primary); height:100%;"></div>
                         </div>
                         <span style="font-size:12px; font-weight:bold;">${r}%</span>
                     </div>
                     <div style="font-size:11px; color:#888;">${d.nc} / ${d.targetNew}</div>
                 </td>
+                <td><span style="color:var(--primary); font-weight:bold;">${d.sub || 0}</span></td>
                 <td><span style="color:#f54a45; font-weight:bold;">${d.cc}</span> <small>/ ${d.targetCancel}</small></td>
                 <td>💎 ${d.ret}</td>
                 <td><button onclick="app.openModal(${d.id})" class="btn-gradient" style="padding:6px 12px; font-size:12px;">Edit</button></td>
             </tr>`;
         }).join('');
-        
+
         // Update Filter Dropdown for Admin
-        if(u.role === 'ADMIN' && filterBranch) {
+        if (u.role === 'ADMIN' && filterBranch) {
             const currentOpts = new Set(Array.from(filterBranch.options).map(o => o.value));
-            const brs = [...new Set(this.data.map(d=>d.branch))];
-            
+            const brs = [...new Set(this.data.map(d => d.branch))];
+
             brs.forEach(b => {
-                if(!currentOpts.has(b)) {
+                if (!currentOpts.has(b)) {
                     const opt = document.createElement('option');
                     opt.value = b;
                     opt.innerText = b;
@@ -255,61 +256,61 @@ const app = {
             });
         }
     },
-    
-    renderDashboard: function() {
-        const sum = k => this.data.reduce((a,b) => {
-            if(this.user.role === 'BRANCH' && b.branch !== this.user.branch) return a;
-            if(this.user.role === 'STAFF' && b.manager !== this.user.name) return a;
-            return a + (b[k]||0);
+
+    renderDashboard: function () {
+        const sum = k => this.data.reduce((a, b) => {
+            if (this.user.role === 'BRANCH' && b.branch !== this.user.branch) return a;
+            if (this.user.role === 'STAFF' && b.manager !== this.user.name) return a;
+            return a + (b[k] || 0);
         }, 0);
 
         const nc = sum('nc'), tn = sum('targetNew'), cc = sum('cc'), tc = sum('targetCancel');
-        
-        // Safe calculations
-        const rateNew = tn > 0 ? (nc/tn)*100 : 0;
-        const rateCancel = tc > 0 ? (cc/tc)*100 : 0;
 
-        const updateEl = (id, txt) => { const el = document.getElementById(id); if(el) el.innerText = txt; };
-        const setProp = (id, prop, val) => { const el = document.getElementById(id); if(el) el.style.setProperty(prop, val); };
+        // Safe calculations
+        const rateNew = tn > 0 ? (nc / tn) * 100 : 0;
+        const rateCancel = tc > 0 ? (cc / tc) * 100 : 0;
+
+        const updateEl = (id, txt) => { const el = document.getElementById(id); if (el) el.innerText = txt; };
+        const setProp = (id, prop, val) => { const el = document.getElementById(id); if (el) el.style.setProperty(prop, val); };
 
         setProp('progNew', '--p', rateNew);
         updateEl('rateNew', Math.round(rateNew) + '%');
-        updateEl('txtNewAct', nc); 
+        updateEl('txtNewAct', nc);
         updateEl('txtNewTarget', tn);
 
         setProp('progCancel', '--p', rateCancel);
         updateEl('rateCancel', Math.round(rateCancel) + '%');
-        updateEl('txtCancelAct', cc); 
+        updateEl('txtCancelAct', cc);
         updateEl('txtCancelTarget', tc);
 
-        const totalMoney = (nc-cc) * this.config.fee;
+        const totalMoney = (nc - cc) * this.config.fee;
         const moneyStr = totalMoney.toLocaleString();
         updateEl('totalMoney', moneyStr);
         updateEl('headRevenue', moneyStr);
-        
+
         let inc = 0;
         this.data.forEach(d => {
-            if(d.targetNew > 0 && (d.nc/d.targetNew) >= 1) inc += d.nc * 10000;
+            if (d.targetNew > 0 && (d.nc / d.targetNew) >= 1) inc += d.nc * 10000;
         });
         updateEl('estIncentive', inc.toLocaleString() + '원');
 
         // Chart
         const bMap = {};
         this.data.forEach(d => {
-            if(!bMap[d.branch]) bMap[d.branch] = {act:0, tgt:0};
+            if (!bMap[d.branch]) bMap[d.branch] = { act: 0, tgt: 0 };
             bMap[d.branch].act += d.nc; bMap[d.branch].tgt += d.targetNew;
         });
-        
+
         const ctx = document.getElementById('myChart');
-        if(ctx) {
-            if(this.chart) this.chart.destroy();
+        if (ctx) {
+            if (this.chart) this.chart.destroy();
             this.chart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: Object.keys(bMap),
                     datasets: [
-                        { label: 'Actual', data: Object.values(bMap).map(v=>v.act), backgroundColor: '#4e54c8', borderRadius: 6 },
-                        { label: 'Target', data: Object.values(bMap).map(v=>v.tgt), type:'line', borderColor: '#00d2d3', borderWidth: 2, pointRadius: 0 }
+                        { label: 'Actual', data: Object.values(bMap).map(v => v.act), backgroundColor: '#4e54c8', borderRadius: 6 },
+                        { label: 'Target', data: Object.values(bMap).map(v => v.tgt), type: 'line', borderColor: '#00d2d3', borderWidth: 2, pointRadius: 0 }
                     ]
                 },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
@@ -317,43 +318,45 @@ const app = {
         }
     },
 
-    openModal: function(id) {
+    openModal: function (id) {
         const t = this.data.find(d => d.id === id);
-        if(!t) return;
-        
-        const setVal = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
-        
+        if (!t) return;
+
+        const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+
         setVal('editId', id);
         const infoEl = document.getElementById('modalInfo');
-        if(infoEl) infoEl.innerHTML = `<b>${t.branch}</b> / ${t.manager}`;
-        
+        if (infoEl) infoEl.innerHTML = `<b>${t.branch}</b> / ${t.manager}`;
+
         setVal('inpNew', t.nc);
+        setVal('inpSub', t.sub || 0);
         setVal('inpCancel', t.cc);
         setVal('inpSuspend', t.sus);
         setVal('inpRetention', t.ret);
         setVal('inpNote', t.note);
-        
+
         const inpNew = document.getElementById('inpNew');
-        if(inpNew) {
+        if (inpNew) {
             inpNew.oninput = (e) => {
                 const val = Number(e.target.value);
-                const inc = (t.targetNew > 0 && (val/t.targetNew) >= 1) ? val * 10000 : 0;
+                const inc = (t.targetNew > 0 && (val / t.targetNew) >= 1) ? val * 10000 : 0;
                 const prevEl = document.getElementById('previewInc');
-                if(prevEl) prevEl.innerText = inc.toLocaleString();
+                if (prevEl) prevEl.innerText = inc.toLocaleString();
             };
             // Trigger input to show initial calculation
             inpNew.dispatchEvent(new Event('input'));
         }
-        
+
         document.getElementById('inputModal').style.display = 'flex';
     },
-    closeModal: function() { document.getElementById('inputModal').style.display = 'none'; },
-    saveModalData: function() {
+    closeModal: function () { document.getElementById('inputModal').style.display = 'none'; },
+    saveModalData: function () {
         const idVal = document.getElementById('editId').value;
         const id = Number(idVal);
         const t = this.data.find(d => d.id === id);
-        if(t) {
+        if (t) {
             t.nc = Number(document.getElementById('inpNew').value) || 0;
+            t.sub = Number(document.getElementById('inpSub').value) || 0;
             t.cc = Number(document.getElementById('inpCancel').value) || 0;
             t.sus = Number(document.getElementById('inpSuspend').value) || 0;
             t.ret = Number(document.getElementById('inpRetention').value) || 0;
@@ -365,16 +368,16 @@ const app = {
         }
     },
 
-    backupData: function() {
-        const blob = new Blob([JSON.stringify(this.data)], {type: 'application/json'});
+    backupData: function () {
+        const blob = new Blob([JSON.stringify(this.data)], { type: 'application/json' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
-        link.download = `sales_backup_${new Date().toISOString().slice(0,10)}.json`;
+        link.download = `sales_backup_${new Date().toISOString().slice(0, 10)}.json`;
         link.click();
     },
-    restoreData: function(input) {
+    restoreData: function (input) {
         const file = input.files[0];
-        if(!file) return;
+        if (!file) return;
         const reader = new FileReader();
         reader.onload = (e) => {
             try {
@@ -383,34 +386,34 @@ const app = {
                 this.renderAll();
                 this.updateLoginOptions();
                 this.showToast('Data restored successfully.', 'success');
-            } catch(err) { this.showToast('Invalid file format.', 'error'); }
+            } catch (err) { this.showToast('Invalid file format.', 'error'); }
         };
         reader.readAsText(file);
     },
 
     // Utilities
-    save: function() { localStorage.setItem('sa_pro_data', JSON.stringify(this.data)); },
-    initializeData: function() { if(confirm('Reset all data?')) this.initData(); },
-    showTab: function(id) { 
-        document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
+    save: function () { localStorage.setItem('sa_pro_data', JSON.stringify(this.data)); },
+    initializeData: function () { if (confirm('Reset all data?')) this.initData(); },
+    showTab: function (id) {
+        document.querySelectorAll('.page').forEach(e => e.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
         const target = document.getElementById(id);
-        if(target) target.classList.add('active'); 
+        if (target) target.classList.add('active');
     },
-    updateFee: function() { 
-        this.config.fee = Number(document.getElementById('inpFee').value); 
-        localStorage.setItem('sa_pro_config', JSON.stringify(this.config)); 
-        this.renderDashboard(); 
-        this.showToast('Fee updated.'); 
+    updateFee: function () {
+        this.config.fee = Number(document.getElementById('inpFee').value);
+        localStorage.setItem('sa_pro_config', JSON.stringify(this.config));
+        this.renderDashboard();
+        this.showToast('Fee updated.');
     },
-    downloadCSV: function() {
-        let csv = "Branch,Code,Manager,New,Target,Cancel,TargetCancel,Suspend,Retention,Note\n";
-        this.data.forEach(d => csv += `${d.branch},${d.code},${d.manager},${d.nc},${d.targetNew},${d.cc},${d.targetCancel},${d.sus},${d.ret},${d.note}\n`);
-        const link = document.createElement("a"); 
-        link.href = URL.createObjectURL(new Blob(["\uFEFF"+csv], {type: 'text/csv;charset=utf-8;'})); 
-        link.download="sales_report.csv"; 
+    downloadCSV: function () {
+        let csv = "Branch,Code,Manager,New,Sub,Target,Cancel,TargetCancel,Suspend,Retention,Note\n";
+        this.data.forEach(d => csv += `${d.branch},${d.code},${d.manager},${d.nc},${d.sub || 0},${d.targetNew},${d.cc},${d.targetCancel},${d.sus},${d.ret},${d.note}\n`);
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' }));
+        link.download = "sales_report.csv";
         link.click();
     }
 };
 
-window.onload = function() { app.init(); };
+window.onload = function () { app.init(); };
