@@ -108,25 +108,37 @@
                 <div class="dashboard-grid">
                     <!-- Key Metrics Cards -->
                     <div class="stat-card glass-panel blue-card">
-                        <h3>신규 유치</h3>
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <h3>신규 유치</h3>
+                            <button onclick="app.openDetail('NEW')" class="btn-xs">🔍 상세</button>
+                        </div>
                         <div class="value" id="dNew">0</div>
                         <div class="trend"><span>🎯</span> <span id="tNew">목표: 0</span></div>
                         <div class="icon">💼</div>
                     </div>
                     <div class="stat-card glass-panel green-card">
-                        <h3>청약 현황</h3>
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <h3>청약 현황</h3>
+                            <button onclick="app.openDetail('SUB')" class="btn-xs">🔍 상세</button>
+                        </div>
                         <div class="value" id="dSub">0</div>
                         <div class="trend"><span>📈</span> <span id="tSub">진행 중</span></div>
                         <div class="icon">📝</div>
                     </div>
                     <div class="stat-card glass-panel orange-card">
-                        <h3>정지 관리</h3>
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <h3>정지 관리</h3>
+                            <button onclick="app.openDetail('SUS')" class="btn-xs">🔍 상세</button>
+                        </div>
                         <div class="value" id="dSus">0</div>
                         <div class="trend"><span>⚠️</span> <span>집중 관리 필요</span></div>
                         <div class="icon">⛔</div>
                     </div>
                     <div class="stat-card glass-panel red-card">
-                        <h3>해지 방어</h3>
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <h3>해지 방어</h3>
+                            <button onclick="app.openDetail('CANCEL')" class="btn-xs">🔍 상세</button>
+                        </div>
                         <div class="value" id="dCan">0</div>
                         <div class="trend"><span>📉</span> <span id="tCan">목표: 0</span></div>
                         <div class="icon">🚨</div>
@@ -136,7 +148,7 @@
                     <!-- 1. Trend Analysis (Line) -->
                     <div class="chart-card full glass-panel">
                         <div class="chart-header">
-                            <h3>📈 월별 실적 트렌드</h3>
+                            <h3>📈 월별/누적 실적 트렌드 (1월 ~ 12월)</h3>
                         </div>
                         <div class="chart-wrapper"><canvas id="chartTrend"></canvas></div>
                     </div>
@@ -154,7 +166,9 @@
                         <div class="chart-header">
                             <h3>🥧 점유율 분석</h3>
                         </div>
-                        <div class="chart-wrapper" style="padding:10px;"><canvas id="chartShare"></canvas></div>
+                        <div class="chart-wrapper"
+                            style="padding:10px; display:flex; justify-content:center; align-items:center;"><canvas
+                                id="chartShare"></canvas></div>
                     </div>
 
                     <!-- 4. Top 10 Ranking (Horizontal Bar) -->
@@ -292,6 +306,22 @@
             </div>
             <div style="padding:20px; background:rgba(0,0,0,0.02); text-align:right;">
                 <button onclick="app.saveModalData()" class="btn-gradient">저장하기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div id="detailModal" class="modal-overlay">
+        <div class="modal-content glass-panel"
+            style="width:500px; max-height:80vh; display:flex; flex-direction:column;">
+            <div
+                style="padding:20px; border-bottom:1px solid rgba(0,0,0,0.05); display:flex; justify-content:space-between; align-items:center;">
+                <h3 style="margin:0;" id="detailTitle">상세 보기</h3>
+                <button onclick="document.getElementById('detailModal').style.display='none'"
+                    style="border:none; background:transparent; cursor:pointer; font-size:20px;">✕</button>
+            </div>
+            <div style="padding:20px; overflow-y:auto;" id="detailContent">
+                <!-- Dynamic Content -->
             </div>
         </div>
     </div>
