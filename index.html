@@ -93,7 +93,15 @@
                             <h2 style="font-size:24px; font-weight:800; margin:0;">통합 대시보드</h2>
                             <p style="color:var(--text-sub); margin-top:5px;">실시간 성과 현황 및 분석</p>
                         </div>
-                        <div style="text-align:right; font-size:12px; color:var(--text-sub);" id="currentDate"></div>
+                        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:10px;">
+                            <div style="font-size:12px; color:var(--text-sub);" id="currentDate"></div>
+                            <div class="glass-panel" style="padding:4px; display:flex; border-radius:10px;">
+                                <button id="btnViewCount" onclick="app.toggleView('COUNT')" class="btn-gradient"
+                                    style="padding:6px 12px; font-size:12px; border-radius:8px;">건수</button>
+                                <button id="btnViewAmount" onclick="app.toggleView('AMOUNT')" class="btn-outline"
+                                    style="border:none; padding:6px 12px; font-size:12px; color:var(--text-sub);">금액(천원)</button>
+                            </div>
+                        </div>
                     </div>
                 </header>
 
@@ -240,7 +248,7 @@
 
     <!-- Edit Modal -->
     <div id="inputModal" class="modal-overlay">
-        <div class="modal-content glass-panel">
+        <div class="modal-content glass-panel" style="width:600px;">
             <div
                 style="padding:20px; border-bottom:1px solid rgba(0,0,0,0.05); display:flex; justify-content:space-between; align-items:center;">
                 <h3 style="margin:0;">실적 정보 수정</h3>
@@ -257,9 +265,29 @@
                         type="number" id="inpCancel" class="btn-outline" style="width:100%"></div>
                 <div><label style="font-size:12px; font-weight:600; color:var(--text-sub);">정지 건수</label><input
                         type="number" id="inpSuspend" class="btn-outline" style="width:100%"></div>
-                <div><label style="font-size:12px; font-weight:600; color:var(--text-sub);">리텐션</label><input
-                        type="number" id="inpRetention" class="btn-outline" style="width:100%"></div>
-                <div><label style="font-size:12px; font-weight:600; color:var(--text-sub);">비고</label><input type="text"
+
+                <!-- Retention Group -->
+                <div
+                    style="grid-column:span 2; display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; background:rgba(0,0,0,0.03); padding:10px; border-radius:10px;">
+                    <div
+                        style="grid-column:span 3; font-size:12px; font-weight:800; color:var(--primary); margin-bottom:5px;">
+                        💎 리텐션 관리 (P값)</div>
+                    <div><label style="font-size:11px; color:var(--text-sub);">유형</label>
+                        <select id="inpRetType" class="btn-outline" style="width:100%">
+                            <option value="">선택</option>
+                            <option value="인하">인하</option>
+                            <option value="할인">할인</option>
+                            <option value="면제">면제</option>
+                        </select>
+                    </div>
+                    <div><label style="font-size:11px; color:var(--text-sub);">건수 (Count)</label><input type="number"
+                            id="inpRetention" class="btn-outline" style="width:100%"></div>
+                    <div><label style="font-size:11px; color:var(--text-sub);">금액 (천원)</label><input type="number"
+                            id="inpRetPrice" class="btn-outline" style="width:100%"></div>
+                </div>
+
+                <div style="grid-column:span 2;"><label
+                        style="font-size:12px; font-weight:600; color:var(--text-sub);">비고</label><input type="text"
                         id="inpNote" class="btn-outline" style="width:100%"></div>
             </div>
             <div style="padding:20px; background:rgba(0,0,0,0.02); text-align:right;">
