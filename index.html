@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sales Admin Pro v8 - Expert Edition</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
@@ -16,42 +17,42 @@
     <div id="loginScreen" class="modal-overlay" style="display:flex; background:var(--bg-gradient);">
         <div class="glass-panel" style="padding:50px; text-align:center; width:400px;">
             <h1 class="brand">🚀 Sales Admin <span>Pro</span></h1>
-            <p style="color:var(--text-sub); margin-bottom:30px;">Premium Expert Dashboard</p>
+            <p style="color:var(--text-sub); margin-bottom:30px;">프리미엄 전문가 대시보드</p>
 
             <div
                 style="display:flex; background:rgba(0,0,0,0.05); padding:5px; border-radius:12px; margin-bottom:25px;">
                 <button class="nav-item active" style="flex:1; justify-content:center; margin:0;"
-                    onclick="app.setLoginMode('ADMIN')">Admin</button>
+                    onclick="app.setLoginMode('ADMIN')">관리자</button>
                 <button class="nav-item" style="flex:1; justify-content:center; margin:0;"
-                    onclick="app.setLoginMode('BRANCH')">Branch</button>
+                    onclick="app.setLoginMode('BRANCH')">지사장</button>
                 <button class="nav-item" style="flex:1; justify-content:center; margin:0;"
-                    onclick="app.setLoginMode('STAFF')">Staff</button>
+                    onclick="app.setLoginMode('STAFF')">팀원</button>
             </div>
 
             <div id="loginForms">
                 <div id="formAdmin">
-                    <input type="text" id="adminId" placeholder="ID: admin" class="btn-outline"
+                    <input type="text" id="adminId" placeholder="아이디: admin" class="btn-outline"
                         style="width:100%; margin-bottom:10px; text-align:left;">
-                    <input type="password" id="adminPw" placeholder="PW: 1234" class="btn-outline"
+                    <input type="password" id="adminPw" placeholder="비밀번호: 1234" class="btn-outline"
                         style="width:100%; margin-bottom:20px; text-align:left;">
                 </div>
                 <div id="formBranch" style="display:none;">
                     <select id="loginBranchSelect" class="btn-outline" style="width:100%; margin-bottom:10px;">
-                        <option>Select Branch</option>
+                        <option>지사 선택</option>
                     </select>
-                    <input type="password" id="branchPw" placeholder="PW: 1234" class="btn-outline"
+                    <input type="password" id="branchPw" placeholder="비밀번호: 1234" class="btn-outline"
                         style="width:100%; margin-bottom:20px; text-align:left;">
                 </div>
                 <div id="formStaff" style="display:none;">
                     <select id="loginStaffBranch" class="btn-outline" style="width:100%; margin-bottom:10px;">
-                        <option>Select Branch</option>
+                        <option>지사 선택</option>
                     </select>
-                    <input type="text" id="loginStaffName" placeholder="Name" class="btn-outline"
+                    <input type="text" id="loginStaffName" placeholder="이름" class="btn-outline"
                         style="width:100%; margin-bottom:10px; text-align:left;">
-                    <input type="password" id="staffPw" placeholder="Phone 1234" class="btn-outline"
+                    <input type="password" id="staffPw" placeholder="전화번호 뒷자리 (초기 0000)" class="btn-outline"
                         style="width:100%; margin-bottom:20px; text-align:left;">
                 </div>
-                <button onclick="app.login()" class="btn-gradient" style="width:100%;">Sign In</button>
+                <button onclick="app.login()" class="btn-gradient" style="width:100%;">로그인</button>
             </div>
         </div>
     </div>
@@ -61,11 +62,10 @@
             <div class="brand">🚀 Sales <span>Admin</span></div>
 
             <div style="display:flex; flex-direction:column; gap:5px; width:100%;">
-                <div class="nav-item active" onclick="app.showTab('dashboard')"><span>📊</span> <span>Dashboard</span>
-                </div>
-                <div class="nav-item" onclick="app.showTab('list')"><span>📝</span> <span>Performance</span></div>
-                <div class="nav-item" onclick="app.toggleTop10()"><span>🏆</span> <span>Top 10 Experts</span></div>
-                <div class="nav-item admin-only" onclick="app.showTab('settings')"><span>⚙️</span> <span>Settings</span>
+                <div class="nav-item active" onclick="app.showTab('dashboard')"><span>📊</span> <span>대시보드</span></div>
+                <div class="nav-item" onclick="app.showTab('list')"><span>📝</span> <span>실적 관리</span></div>
+                <div class="nav-item" onclick="app.toggleTop10()"><span>🏆</span> <span>Top 10 전문가</span></div>
+                <div class="nav-item admin-only" onclick="app.showTab('settings')"><span>⚙️</span> <span>시스템 설정</span>
                 </div>
             </div>
 
@@ -75,12 +75,11 @@
                         style="width:36px; height:36px; background:var(--primary); border-radius:50%; color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">
                         U</div>
                     <div style="flex:1;">
-                        <div id="uName" style="font-weight:700; font-size:13px;">User</div>
-                        <div id="uRole" style="font-size:11px; color:var(--text-sub);">Role</div>
+                        <div id="uName" style="font-weight:700; font-size:13px;">사용자</div>
+                        <div id="uRole" style="font-size:11px; color:var(--text-sub);">직책</div>
                     </div>
                 </div>
-                <button onclick="app.logout()" class="btn-outline" style="width:100%; text-align:center;">Sign
-                    Out</button>
+                <button onclick="app.logout()" class="btn-outline" style="width:100%; text-align:center;">로그아웃</button>
             </div>
         </nav>
 
@@ -88,34 +87,39 @@
             <!-- Dashboard Section -->
             <section id="dashboard" class="page">
                 <header style="margin-bottom:30px;">
-                    <h2 style="font-size:24px; font-weight:800; margin:0;">Analytics Dashboard</h2>
-                    <p style="color:var(--text-sub);">Real-time performance overview</p>
+                    <div style="display:flex; justify-content:space-between; align-items:end;">
+                        <div>
+                            <h2 style="font-size:24px; font-weight:800; margin:0;">통합 대시보드</h2>
+                            <p style="color:var(--text-sub); margin-top:5px;">실시간 성과 현황 및 분석</p>
+                        </div>
+                        <div style="text-align:right; font-size:12px; color:var(--text-sub);" id="currentDate"></div>
+                    </div>
                 </header>
 
                 <div class="dashboard-grid">
                     <!-- Key Metrics Cards -->
                     <div class="stat-card glass-panel blue-card">
-                        <h3>New Sales</h3>
+                        <h3>신규 유치</h3>
                         <div class="value" id="dNew">0</div>
-                        <div class="trend"><span>🎯</span> <span id="tNew">Target: 0</span></div>
+                        <div class="trend"><span>🎯</span> <span id="tNew">목표: 0</span></div>
                         <div class="icon">💼</div>
                     </div>
                     <div class="stat-card glass-panel green-card">
-                        <h3>New Subscriptions</h3>
+                        <h3>청약 현황</h3>
                         <div class="value" id="dSub">0</div>
-                        <div class="trend"><span>📈</span> Growing</div>
+                        <div class="trend"><span>📈</span> <span id="tSub">진행 중</span></div>
                         <div class="icon">📝</div>
                     </div>
                     <div class="stat-card glass-panel orange-card">
-                        <h3>Suspensions</h3>
+                        <h3>정지 관리</h3>
                         <div class="value" id="dSus">0</div>
-                        <div class="trend"><span>⚠️</span> Action Required</div>
+                        <div class="trend"><span>⚠️</span> <span>집중 관리 필요</span></div>
                         <div class="icon">⛔</div>
                     </div>
                     <div class="stat-card glass-panel red-card">
-                        <h3>Cancellations</h3>
+                        <h3>해지 방어</h3>
                         <div class="value" id="dCan">0</div>
-                        <div class="trend"><span>📉</span> <span id="tCan">Limit: 0</span></div>
+                        <div class="trend"><span>📉</span> <span id="tCan">목표: 0</span></div>
                         <div class="icon">🚨</div>
                     </div>
 
@@ -123,7 +127,7 @@
                     <!-- 1. Trend Analysis (Line) -->
                     <div class="chart-card full glass-panel">
                         <div class="chart-header">
-                            <h3>📈 Monthly Performance Trend</h3>
+                            <h3>📈 월별 실적 트렌드</h3>
                         </div>
                         <div class="chart-wrapper"><canvas id="chartTrend"></canvas></div>
                     </div>
@@ -131,7 +135,7 @@
                     <!-- 2. Branch Performance (Bar) -->
                     <div class="chart-card glass-panel">
                         <div class="chart-header">
-                            <h3>🏢 Branch Performance (New)</h3>
+                            <h3>🏢 지사별 실적 현황</h3>
                         </div>
                         <div class="chart-wrapper"><canvas id="chartBranch"></canvas></div>
                     </div>
@@ -139,15 +143,15 @@
                     <!-- 3. Composition (Doughnut) -->
                     <div class="chart-card glass-panel">
                         <div class="chart-header">
-                            <h3>🥧 Sales Share by Branch</h3>
+                            <h3>🥧 점유율 분석</h3>
                         </div>
-                        <div class="chart-wrapper" style="padding:20px;"><canvas id="chartShare"></canvas></div>
+                        <div class="chart-wrapper" style="padding:10px;"><canvas id="chartShare"></canvas></div>
                     </div>
 
                     <!-- 4. Top 10 Ranking (Horizontal Bar) -->
                     <div class="chart-card glass-panel" style="grid-column: span 8;">
                         <div class="chart-header">
-                            <h3>🏆 Top Performer Ranking (Incentive)</h3>
+                            <h3>🏆 전문가 랭킹 (인센티브 기준)</h3>
                         </div>
                         <div class="chart-wrapper"><canvas id="chartRank"></canvas></div>
                     </div>
@@ -155,7 +159,7 @@
                     <!-- 5. Efficiency Radar -->
                     <div class="chart-card glass-panel" style="grid-column: span 4;">
                         <div class="chart-header">
-                            <h3>⚡ Metric Balance</h3>
+                            <h3>⚡ 지표 밸런스</h3>
                         </div>
                         <div class="chart-wrapper"><canvas id="chartRadar"></canvas></div>
                     </div>
@@ -166,31 +170,34 @@
             <!-- List Section -->
             <section id="list" class="page" style="display:none;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                    <h2>Performance Records</h2>
-                    <div style="display:flex; gap:10px;">
-                        <input type="text" id="searchInput" placeholder="Search..." class="btn-outline"
+                    <div>
+                        <h2 style="margin:0;">실적 상세 관리</h2>
+                        <p style="color:var(--text-sub); margin-top:5px; font-size:13px;">개별 건수 입력 및 수정</p>
+                    </div>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <input type="text" id="searchInput" placeholder="검색 (담당자, 지사)" class="btn-outline"
                             onkeyup="app.filterList()">
                         <select id="filterBranch" class="btn-outline" onchange="app.filterList()">
-                            <option value="ALL">All Branches</option>
+                            <option value="ALL">전체 지사</option>
                         </select>
                         <input type="file" id="csvUpload" style="display:none" onchange="app.handleFileUpload(this)">
                         <button onclick="document.getElementById('csvUpload').click()" class="btn-outline">📂
-                            Upload</button>
-                        <button onclick="app.downloadCSV()" class="btn-gradient">Export CSV</button>
+                            업로드</button>
+                        <button onclick="app.downloadCSV()" class="btn-gradient">엑셀 다운로드</button>
                     </div>
                 </div>
                 <div class="glass-panel table-container">
                     <table id="dataTable">
                         <thead>
                             <tr>
-                                <th onclick="app.sort('branch')">Branch</th>
-                                <th onclick="app.sort('manager')">Manager</th>
-                                <th onclick="app.sort('nc')">New</th>
-                                <th>Sub</th>
-                                <th>Cancel</th>
-                                <th>Suspend</th>
-                                <th>Retention</th>
-                                <th>Action</th>
+                                <th onclick="app.sort('branch')">지사명</th>
+                                <th onclick="app.sort('manager')">담당자</th>
+                                <th onclick="app.sort('nc')">신규</th>
+                                <th>청약</th>
+                                <th>해지</th>
+                                <th>정지</th>
+                                <th>리텐션</th>
+                                <th>관리</th>
                             </tr>
                         </thead>
                         <tbody id="listBody"></tbody>
@@ -200,14 +207,20 @@
 
             <!-- Settings Section -->
             <section id="settings" class="page" style="display:none;">
-                <h2>Settings</h2>
+                <h2>시스템 설정</h2>
                 <div class="glass-panel" style="padding:30px; margin-top:20px;">
-                    <h3>Data Management</h3>
-                    <div style="display:flex; gap:10px; margin-top:20px;">
-                        <button onclick="app.initData()" class="btn-gradient">Reset Data (Random)</button>
-                        <button onclick="app.backupData()" class="btn-outline">Backup JSON</button>
-                        <input type="number" id="inpFee" placeholder="Unit Fee" class="btn-outline" value="30">
-                        <button onclick="app.updateFee()" class="btn-gradient">Update Fee</button>
+                    <h3>데이터 관리</h3>
+                    <p style="color:var(--text-sub); margin-bottom:20px;">데이터 초기화, 백업 및 복원을 관리합니다.</p>
+                    <div style="display:flex; gap:10px;">
+                        <button onclick="app.initData()" class="btn-gradient">데이터 초기화 (예시 생성)</button>
+                        <button onclick="app.backupData()" class="btn-outline">JSON 백업</button>
+                    </div>
+
+                    <h3 style="margin-top:40px;">환경 설정</h3>
+                    <div style="display:flex; gap:10px; align-items:center; margin-top:20px;">
+                        <span>건당 수수료:</span>
+                        <input type="number" id="inpFee" placeholder="수수료" class="btn-outline" value="30">
+                        <button onclick="app.updateFee()" class="btn-gradient">저장</button>
                     </div>
                 </div>
             </section>
@@ -215,10 +228,10 @@
 
         <!-- Top 10 Sidebar Overlay -->
         <div id="top10Panel" class="glass-panel"
-            style="position:fixed; right:-400px; top:20px; bottom:20px; width:350px; z-index:3000; transition:0.3s; display:flex; flex-direction:column;">
+            style="position:fixed; right:-400px; top:20px; bottom:20px; width:360px; z-index:3000; transition:0.4s cubic-bezier(0.19, 1, 0.22, 1); display:flex; flex-direction:column;">
             <div class="ranking-header">
-                <h3>🏆 Hall of Fame</h3>
-                <button onclick="app.toggleTop10()" class="btn-outline" style="border:none;">✕</button>
+                <h3>🏆 명예의 전당 (Top 10)</h3>
+                <button onclick="app.toggleTop10()" class="btn-outline" style="border:none; font-size:18px;">✕</button>
             </div>
             <div id="top10List" class="ranking-list"></div>
         </div>
@@ -227,27 +240,29 @@
     <!-- Edit Modal -->
     <div id="inputModal" class="modal-overlay">
         <div class="modal-content glass-panel">
-            <div style="padding:20px; border-bottom:1px solid #eee; display:flex; justify-content:space-between;">
-                <h3 style="margin:0;">Update Metrics</h3>
+            <div
+                style="padding:20px; border-bottom:1px solid rgba(0,0,0,0.05); display:flex; justify-content:space-between; align-items:center;">
+                <h3 style="margin:0;">실적 정보 수정</h3>
                 <button onclick="app.closeModal()"
                     style="border:none; background:transparent; cursor:pointer; font-size:20px;">✕</button>
             </div>
             <div style="padding:24px; display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                 <input type="hidden" id="editId">
-                <div><label>New Sales</label><input type="number" id="inpNew" class="btn-outline" style="width:100%">
-                </div>
-                <div><label>Subscription</label><input type="number" id="inpSub" class="btn-outline" style="width:100%">
-                </div>
-                <div><label>Cancellation</label><input type="number" id="inpCancel" class="btn-outline"
-                        style="width:100%"></div>
-                <div><label>Suspension</label><input type="number" id="inpSuspend" class="btn-outline"
-                        style="width:100%"></div>
-                <div><label>Retention</label><input type="number" id="inpRetention" class="btn-outline"
-                        style="width:100%"></div>
-                <div><label>Note</label><input type="text" id="inpNote" class="btn-outline" style="width:100%"></div>
+                <div><label style="font-size:12px; font-weight:600; color:var(--text-sub);">신규 실적</label><input
+                        type="number" id="inpNew" class="btn-outline" style="width:100%"></div>
+                <div><label style="font-size:12px; font-weight:600; color:var(--text-sub);">청약 건수</label><input
+                        type="number" id="inpSub" class="btn-outline" style="width:100%"></div>
+                <div><label style="font-size:12px; font-weight:600; color:var(--text-sub);">해지 건수</label><input
+                        type="number" id="inpCancel" class="btn-outline" style="width:100%"></div>
+                <div><label style="font-size:12px; font-weight:600; color:var(--text-sub);">정지 건수</label><input
+                        type="number" id="inpSuspend" class="btn-outline" style="width:100%"></div>
+                <div><label style="font-size:12px; font-weight:600; color:var(--text-sub);">리텐션</label><input
+                        type="number" id="inpRetention" class="btn-outline" style="width:100%"></div>
+                <div><label style="font-size:12px; font-weight:600; color:var(--text-sub);">비고</label><input type="text"
+                        id="inpNote" class="btn-outline" style="width:100%"></div>
             </div>
             <div style="padding:20px; background:rgba(0,0,0,0.02); text-align:right;">
-                <button onclick="app.saveModalData()" class="btn-gradient">Save Changes</button>
+                <button onclick="app.saveModalData()" class="btn-gradient">저장하기</button>
             </div>
         </div>
     </div>
