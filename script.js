@@ -216,7 +216,7 @@ const app = {
         });
 
         if (list.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px;">No data found.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px;">No data found.</td></tr>'; // Updates colspan to 8
             return;
         }
 
@@ -236,6 +236,7 @@ const app = {
                 </td>
                 <td><span style="color:var(--primary); font-weight:bold;">${d.sub || 0}</span></td>
                 <td><span style="color:#f54a45; font-weight:bold;">${d.cc}</span> <small>/ ${d.targetCancel}</small></td>
+                <td><span style="color:#fdcb6e; font-weight:bold;">${d.sus || 0}</span></td>
                 <td>💎 ${d.ret}</td>
                 <td><button onclick="app.openModal(${d.id})" class="btn-gradient" style="padding:6px 12px; font-size:12px;">Edit</button></td>
             </tr>`;
@@ -257,7 +258,6 @@ const app = {
     },
 
     renderDashboard: function () {
-        // Updated dashboard logic with new fields
         const sum = k => this.data.reduce((a, b) => {
             if (this.user.role === 'BRANCH' && b.branch !== this.user.branch) return a;
             if (this.user.role === 'STAFF' && b.manager !== this.user.name) return a;
@@ -265,7 +265,7 @@ const app = {
         }, 0);
 
         const nc = sum('nc'), tn = sum('targetNew'), cc = sum('cc'), tc = sum('targetCancel');
-        const sub = sum('sub'), sus = sum('sus'); // New metrics
+        const sub = sum('sub'), sus = sum('sus');
 
         const rateNew = tn > 0 ? (nc / tn) * 100 : 0;
         const rateCancel = tc > 0 ? (cc / tc) * 100 : 0;
@@ -278,14 +278,14 @@ const app = {
         updateEl('txtNewAct', nc);
         updateEl('txtNewTarget', tn);
 
-        updateEl('txtSubAct', sub); // Update Subscription Card
+        updateEl('txtSubAct', sub);
 
         setProp('progCancel', '--p', rateCancel);
         updateEl('rateCancel', Math.round(rateCancel) + '%');
         updateEl('txtCancelAct', cc);
         updateEl('txtCancelTarget', tc);
 
-        updateEl('txtSusAct', sus); // Update Suspension Card
+        updateEl('txtSusAct', sus);
 
         const totalMoney = (nc - cc) * this.config.fee;
         const moneyStr = totalMoney.toLocaleString();
