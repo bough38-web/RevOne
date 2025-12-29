@@ -220,7 +220,10 @@ const app = {
     renderAll: function () {
         if (!this.user) return;
         this.renderStats();
-        setTimeout(() => this.renderCharts(), 50);
+        setTimeout(() => {
+            this.renderCharts();
+            this.renderBranchChart(); // Separate render for specific reload
+        }, 50);
         this.renderList();
         this.renderTop10();
     },
@@ -237,8 +240,53 @@ const app = {
         document.getElementById('tCan').innerText = '한도: ' + this.getFormat(sumTGT('targetCancel'));
     },
 
+    renderBranchChart: function () {
+        const id = 'chartBranch';
+        if (this.charts[id]) { this.charts[id].destroy(); }
+
+        Chart.defaults.font.family = 'Pretendard';
+
+        // Multi-Metric Logic
+        const showNew = document.getElementById('chkNew').checked;
+        const showSub = document.getElementById('chkSub').checked;
+        const showCan = document.getElementById('chkCan').checked;
+        const showSus = document.getElementById('chkSus').checked;
+
+        const datasets = [];
+
+        if (showNew) {
+            const d = BRANCH_LIST.map(b => this.data.filter(x => x.branch.startsWith(b)).reduce((a, x) => a + this.getValue(x, 'nc'), 0));
+            datasets.push({ label: '신규', data: d, backgroundColor: '#6c5ce7', borderRadius: 4 });
+        }
+        if (showSub) {
+            const d = BRANCH_LIST.map(b => this.data.filter(x => x.branch.startsWith(b)).reduce((a, x) => a + this.getValue(x, 'sub'), 0));
+            datasets.push({ label: '청약', data: d, backgroundColor: '#00b894', borderRadius: 4 });
+        }
+        if (showCan) {
+            const d = BRANCH_LIST.map(b => this.data.filter(x => x.branch.startsWith(b)).reduce((a, x) => a + this.getValue(x, 'cc'), 0));
+            datasets.push({ label: '해지', data: d, backgroundColor: '#d63031', borderRadius: 4 });
+        }
+        if (showSus) {
+            const d = BRANCH_LIST.map(b => this.data.filter(x => x.branch.startsWith(b)).reduce((a, x) => a + this.getValue(x, 'sus'), 0));
+            datasets.push({ label: '정지', data: d, backgroundColor: '#e17055', borderRadius: 4 });
+        }
+
+        this.createChart(id, 'bar', {
+            labels: BRANCH_LIST,
+            datasets: datasets
+        }, {
+            plugins: {
+                legend: { display: true, position: 'top', align: 'end', labels: { boxWidth: 10, usePointStyle: true } },
+                datalabels: { display: true, color: '#444', font: { weight: 'bold', size: 10 }, anchor: 'end', align: 'top', offset: -2, formatter: (v) => v > 0 ? v.toLocaleString() : '' }
+            },
+            responsive: true, maintainAspectRatio: false,
+            scales: { x: { grid: { display: false } } }
+        });
+    },
+
     renderCharts: function () {
-        Object.keys(this.charts).forEach(k => { if (this.charts[k]) this.charts[k].destroy(); });
+        // Render others normally
+        ['chartTrend', 'chartShare', 'chartRank', 'chartRadar'].forEach(k => { if (this.charts[k]) this.charts[k].destroy(); });
 
         Chart.defaults.font.family = 'Pretendard';
         Chart.defaults.color = '#636e72';
@@ -250,7 +298,7 @@ const app = {
                 datalabels: {
                     display: true, color: '#444', font: { weight: 'bold', size: 10 },
                     anchor: 'end', align: 'top', offset: -2,
-                    formatter: (v) => v.toLocaleString()
+                    formatter: (v) => v > 0 ? v.toLocaleString() : ''
                 }
             }
         };
@@ -259,10 +307,9 @@ const app = {
 
         // 1. Trend (12 Months + Cumulative)
         const labels = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
-        // Simulate data logic (demo only)
         const scale = this.viewMode === 'AMOUNT' ? this.config.fee : 1;
         const monthlyData = labels.map(() => Math.floor(Math.random() * 50 * scale));
-        const accData = monthlyData.reduce((acc, curr, i) => [...acc, (acc[i - 1] || 0) + curr], []); // Accumulate
+        const accData = monthlyData.reduce((acc, curr, i) => [...acc, (acc[i - 1] || 0) + curr], []);
 
         this.createChart('chartTrend', 'line', {
             labels: labels,
@@ -283,23 +330,13 @@ const app = {
                     borderDash: [5, 5],
                     fill: 'start',
                     tension: 0.4,
-                    datalabels: { display: false } // Hide labels for clean accumulation line
+                    datalabels: { display: false }
                 }
             ]
         }, { ...commonOptions, plugins: { legend: { display: true }, datalabels: { display: true } }, scales: { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false } } } });
 
 
-        // 2. Branch (Fixed 8)
-        this.createChart('chartBranch', 'bar', {
-            labels: BRANCH_LIST,
-            datasets: [{
-                data: brData,
-                backgroundColor: this.getGradient(document.getElementById('chartBranch').getContext('2d'), '#a29bfe', '#6c5ce7'),
-                borderRadius: 6
-            }]
-        }, commonOptions);
-
-        // 3. Share (Fixed 8 - Centered)
+        // 3. Share (Fixed 8 - Centered & Padded)
         this.createChart('chartShare', 'doughnut', {
             labels: BRANCH_LIST,
             datasets: [{
@@ -308,8 +345,9 @@ const app = {
                 borderWidth: 0
             }]
         }, {
+            layout: { padding: 20 },
             plugins: {
-                legend: { position: 'right', labels: { boxWidth: 10 } },
+                legend: { position: 'right', labels: { boxWidth: 12, padding: 15, font: { size: 11 } } },
                 datalabels: {
                     color: 'white', formatter: (v, ctx) => {
                         let sum = 0;
@@ -344,12 +382,6 @@ const app = {
         }, { plugins: { legend: { display: false }, datalabels: { display: true, backgroundColor: 'white', borderRadius: 4 } }, scales: { r: { ticks: { display: false } } } });
     },
 
-    getGradient: function (ctx, c1, c2) {
-        const g = ctx.createLinearGradient(0, 400, 0, 0);
-        g.addColorStop(0, c1); g.addColorStop(1, c2);
-        return g;
-    },
-
     createChart: function (id, type, data, opts) {
         const el = document.getElementById(id);
         if (!el) return;
@@ -363,7 +395,7 @@ const app = {
         const search = document.getElementById('searchInput').value.toLowerCase();
 
         let list = this.data.filter(d => {
-            if (filter !== 'ALL' && !d.branch.startsWith(filter)) return false; // StartsWith for better matching
+            if (filter !== 'ALL' && !d.branch.startsWith(filter)) return false;
             return d.manager.toLowerCase().includes(search) || d.branch.toLowerCase().includes(search);
         });
 
