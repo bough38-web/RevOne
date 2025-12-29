@@ -70,7 +70,6 @@ const app = {
         if (target) target.style.display = 'block';
     },
     updateLoginOptions: function () {
-        // Handle case where data might be empty or malformed
         const branches = this.data ? [...new Set(this.data.map(d => d.branch))].filter(Boolean) : [];
         const opts = '<option value="">Select Branch</option>' + branches.map(b => `<option value="${b}">${b}</option>`).join('');
         const brSelect = document.getElementById('loginBranchSelect');
@@ -78,11 +77,9 @@ const app = {
         if (brSelect) brSelect.innerHTML = opts;
         if (stSelect) stSelect.innerHTML = opts;
     },
-    updateLoginStaffList: function () { // Added missing logical implementation
+    updateLoginStaffList: function () {
         const br = document.getElementById('loginStaffBranch').value;
         const staffList = this.data.filter(d => d.branch === br).map(d => d.manager);
-        // Optionally update a datalist or similar if we were using a select for names, 
-        // but current UI uses text input for name, so we just return.
     },
 
     login: function () {
@@ -91,7 +88,6 @@ const app = {
         const role = roleInput.value;
         let u = null;
 
-        // Use credentials from config
         if (role === 'ADMIN') {
             const id = document.getElementById('adminId').value;
             const pw = document.getElementById('adminPw').value;
@@ -154,7 +150,7 @@ const app = {
             if (!line) continue;
 
             const p = line.split(',');
-            if (p.length < 3) continue; // Basic validation
+            if (p.length < 3) continue;
 
             this.data.push({
                 id: Date.now() + i,
@@ -164,7 +160,13 @@ const app = {
                 targetNew: Number(p[3]) || 0,
                 targetCancel: Number(p[4]) || 0,
                 phone: p[5] ? p[5].trim() : '0000',
-                nc: 0, sub: 0, cc: 0, sus: 0, ret: 0, note: ''
+                // Random Example Data
+                nc: Math.floor(Math.random() * (Number(p[3]) || 10)),
+                sub: Math.floor(Math.random() * 5),
+                cc: Math.floor(Math.random() * 3),
+                sus: Math.floor(Math.random() * 2),
+                ret: Math.floor(Math.random() * 5),
+                note: ''
             });
         }
         this.save();
@@ -178,7 +180,6 @@ const app = {
         this.data.sort((a, b) => {
             let vA = a[key], vB = b[key];
             if (key === 'rate') {
-                // Safe division
                 vA = a.targetNew > 0 ? a.nc / a.targetNew : 0;
                 vB = b.targetNew > 0 ? b.nc / b.targetNew : 0;
             }
@@ -220,7 +221,6 @@ const app = {
         }
 
         tbody.innerHTML = list.map(d => {
-            // Robust calculation
             const r = d.targetNew > 0 ? Math.round((d.nc / d.targetNew) * 100) : 0;
             return `<tr>
                 <td><b>${d.branch}</b></td>
@@ -241,7 +241,6 @@ const app = {
             </tr>`;
         }).join('');
 
-        // Update Filter Dropdown for Admin
         if (u.role === 'ADMIN' && filterBranch) {
             const currentOpts = new Set(Array.from(filterBranch.options).map(o => o.value));
             const brs = [...new Set(this.data.map(d => d.branch))];
@@ -258,6 +257,7 @@ const app = {
     },
 
     renderDashboard: function () {
+        // Updated dashboard logic with new fields
         const sum = k => this.data.reduce((a, b) => {
             if (this.user.role === 'BRANCH' && b.branch !== this.user.branch) return a;
             if (this.user.role === 'STAFF' && b.manager !== this.user.name) return a;
@@ -265,8 +265,8 @@ const app = {
         }, 0);
 
         const nc = sum('nc'), tn = sum('targetNew'), cc = sum('cc'), tc = sum('targetCancel');
+        const sub = sum('sub'), sus = sum('sus'); // New metrics
 
-        // Safe calculations
         const rateNew = tn > 0 ? (nc / tn) * 100 : 0;
         const rateCancel = tc > 0 ? (cc / tc) * 100 : 0;
 
@@ -278,10 +278,14 @@ const app = {
         updateEl('txtNewAct', nc);
         updateEl('txtNewTarget', tn);
 
+        updateEl('txtSubAct', sub); // Update Subscription Card
+
         setProp('progCancel', '--p', rateCancel);
         updateEl('rateCancel', Math.round(rateCancel) + '%');
         updateEl('txtCancelAct', cc);
         updateEl('txtCancelTarget', tc);
+
+        updateEl('txtSusAct', sus); // Update Suspension Card
 
         const totalMoney = (nc - cc) * this.config.fee;
         const moneyStr = totalMoney.toLocaleString();
@@ -393,7 +397,13 @@ const app = {
 
     // Utilities
     save: function () { localStorage.setItem('sa_pro_data', JSON.stringify(this.data)); },
-    initializeData: function () { if (confirm('Reset all data?')) this.initData(); },
+    // Force clear and re-init for testing
+    initializeData: function () {
+        if (confirm('Reset all data and generate examples?')) {
+            localStorage.removeItem('sa_pro_data');
+            this.initData(true);
+        }
+    },
     showTab: function (id) {
         document.querySelectorAll('.page').forEach(e => e.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
