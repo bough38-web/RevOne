@@ -173,6 +173,9 @@
                         <select id="filterBranch" class="btn-outline" onchange="app.filterList()">
                             <option value="ALL">All Branches</option>
                         </select>
+                        <input type="file" id="csvUpload" style="display:none" onchange="app.handleFileUpload(this)">
+                        <button onclick="document.getElementById('csvUpload').click()" class="btn-outline">📂
+                            Upload</button>
                         <button onclick="app.downloadCSV()" class="btn-gradient">Export CSV</button>
                     </div>
                 </div>
